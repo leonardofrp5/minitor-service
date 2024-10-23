@@ -1,0 +1,23 @@
+{
+  "name": "monitor-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "seed:mongo": "node database/seed/populateSessions.js",
+    "seed-real-users:mongo": "node database/seed/populateSessionsRealCases.js"
+  },
+  "author": "Camilo Acevedo",
+  "license": "MIT",
+  "dependencies": {
+    "@faker-js/faker": "^9.0.3",
+    "dotenv": "^16.4.5",
+    "luxon": "^3.5.0",
+    "mongoose": "^8.7.1",
+    "node-cron": "^3.0.3",
+    "twilio": "^5.3.3",
+    "winston": "^3.15.0"
+  }
+}
