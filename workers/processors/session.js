@@ -39,7 +39,7 @@ const processSessions = async (batch, workerId) => {
             }
           }
         });
-      } else {
+      } else if (session.verificationAttemps.length && currentTime > sessionTime.plus({minutes: 10}).toJSDate()) {
         smsPromises.push(
           TwilioService.sendSMS(session.emergencyPhoneNumber, `Hola, queremos dejarte saber que ${session.name} finalizo su sesion de entrenamiento pero no nos lo ha confirmado a traves de nuestra plataforma. Intenta contactarle para asegurarnos que todo esta bien.`)
         );
