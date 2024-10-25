@@ -31,7 +31,7 @@ async function processSessionsInParallel() {
     for (let i = 0; i < cpuList.length; i++) {
       const chunk = batch.slice(i * chunkSize, (i + 1) * chunkSize);
       if (chunk.length > 0) {
-        workers.push(WorkerManager.runWorker('session', chunk, cpuList[i].times.sys));
+        workers.push(WorkerManager.runWorker('sessionV2', chunk, cpuList[i].times.sys));
       }
     }
 
