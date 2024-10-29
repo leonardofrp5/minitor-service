@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker';
 import { DateTime } from 'luxon';
 import { connectDB, closeDB } from "../mongo.js";
 import { SessionModel } from '../../models/session.js';

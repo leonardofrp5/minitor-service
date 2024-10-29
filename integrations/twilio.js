@@ -11,8 +11,8 @@ class TwilioService {
     try {
       return await this.client.messages.create({
           body: body,
-          from: `whatsapp:${config.TWILIO_FROM_PHONE}`,
-          to: `whatsapp:+57${to}`
+          from: `${config.TWILIO_FROM_PHONE}`,
+          to: `+57${to}`
       });
     } catch (error) {
       logger.error(error);

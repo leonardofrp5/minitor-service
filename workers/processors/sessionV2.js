@@ -23,8 +23,8 @@ const processSessions = async (batch, workerId) => {
     if (currentTime > sessionTime) {
       if (!session.verificationAttemps || !session.verificationAttemps.length) {
         const smsPromise = TwilioService.sendSMS(
-          session.phoneNumber, 
-          `Hola ${session.name}, tu sesión ha finalizado. Por favor, confirmalo dentro de la plataforma.`
+          session.phoneNumber,
+          `Hola ${session.name} si ya finalizaste tu rutina, por favor ingresa a este enlace (https://wwwr.vercel.app/) y finaliza la sesión.`
         );
         smsPromises.push(smsPromise);
         sessionMap.push({ session, to: session.phoneNumber, type: 'regular' });
@@ -32,7 +32,7 @@ const processSessions = async (batch, workerId) => {
       } else if (session.verificationAttemps.length && currentTime > sessionTime.plus({ minutes: 10 }).toJSDate()) {
         const smsPromise = TwilioService.sendSMS(
           session.emergencyPhoneNumber,
-          `Hola, queremos dejarte saber que ${session.name} finalizo su sesion de entrenamiento pero no nos lo ha confirmado a traves de nuestra plataforma. Intenta contactarle para asegurarnos que todo esta bien.`
+          `Hola, desde WWWR te informamos que eres el contacto de emergencia de ${session.name}. Esta persona finalizo su entrenamiento`
         );
         smsPromises.push(smsPromise);
         sessionMap.push({ session, to: session.emergencyPhoneNumber, type: 'emergency' });
