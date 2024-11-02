@@ -1,6 +1,5 @@
 import { parentPort, workerData } from 'worker_threads';
 import { DateTime } from 'luxon';
-import { Types } from 'mongoose';
 import { sendSMS } from '../../integrations/sns.js';
 import { logger } from "../../utils/logger.js";
 
@@ -54,10 +53,19 @@ const processSessions = async (batch, workerId) => {
           }
         }
       });
+
+      sessionMap[index] = null;
+      smsPromises[index] = null;
     });
   }
 
   parentPort.postMessage({ processedCount: batch.length, bulkOps });
+  bulkOps = [];
+
+  if (global && global.gc) {
+    logger.info(`Worker ${workerId} is running garbage collection...`);
+    global.gc();
+  }
 };
 
 processSessions(workerData.batch, workerData.workerId);
