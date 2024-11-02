@@ -5,10 +5,10 @@ import SessionRepository from "./DAL/session.js";
 import WorkerManager from "./workers/workerManager.js";
 import { logger } from './utils/logger.js';
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 500;
+const MAX_PARALLEL_WORKERS = 3;
 
 async function processSessionsInParallel() {
-  const cpuList = cpus();
   let lastId = null;
   let totalProcessed = 0;
 
@@ -23,19 +23,24 @@ async function processSessionsInParallel() {
     };
 
     lastId = batch[batch.length - 1]._id;
-    logger.info(`CPU quantities ${cpuList.length}`);
 
     const workers = [];
-    const chunkSize = Math.ceil(batch.length / cpuList.length);
+    const chunkSize = Math.ceil(batch.length / MAX_PARALLEL_WORKERS);
 
-    for (let i = 0; i < cpuList.length; i++) {
+    for (let i = 0; i < MAX_PARALLEL_WORKERS; i++) {
       const chunk = batch.slice(i * chunkSize, (i + 1) * chunkSize);
       if (chunk.length > 0) {
-        workers.push(WorkerManager.runWorker('sessionV2', chunk, cpuList[i].times.sys));
+        workers.push(WorkerManager.runWorker('sessionV2', chunk, i));
       }
     }
 
     const results = await Promise.all(workers);
+    const bulkOps = results.flatMap(result => result.bulkOps);
+
+    if (bulkOps.length > 0) {
+      await SessionRepository.bulkUpdateDocuments(bulkOps);
+    }
+
     totalProcessed += results.reduce((acc, result) => acc + result.processedCount, 0);
     logger.info(`Processed ${totalProcessed} sessions`);
   }
